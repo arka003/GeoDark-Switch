@@ -20,6 +20,9 @@ jobs:
           
       - name: Build app
         run: |
+          # Create build directory
+          mkdir -p build/Release
+          
           # Build without code signing
           xcodebuild -project "GeoDark Switch.xcodeproj" -scheme "GeoDark Switch" -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
           

@@ -1,41 +1,21 @@
-name: Create Release
-
-on:
-  push:
-    tags:
-      - 'v*'
-
-jobs:
-  build-and-release:
-    runs-on: macos-latest
+- name: Build app
+  run: |
+    # Create build directory
+    mkdir -p build/Release
     
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Set up Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
-          
-      - name: Build app
-        run: |
-          # Create build directory
-          mkdir -p build/Release
-          
-          # Build without code signing
-          xcodebuild -project "GeoDark Switch.xcodeproj" -scheme "GeoDark Switch" -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
-          
-          # Create a zip of the app from the build products directory
-          cd build/Release
-          zip -r GeoDarkSwitch.zip "GeoDark Switch.app"
-          
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/Release/GeoDarkSwitch.zip
-          name: GeoDark Switch ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-          generate_release_notes: true
+    # Build without code signing
+    xcodebuild -project "GeoDark Switch.xcodeproj" -scheme "GeoDark Switch" -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+    
+    # Create a zip of the app from the build products directory
+    cd build/Release
+    zip -r GeoDarkSwitch.zip "GeoDark Switch.app"
+    
+- name: Create Release
+  id: create_release
+  uses: softprops/action-gh-release@v1
+  with:
+    files: build/Release/GeoDarkSwitch.zip
+    name: GeoDark Switch ${{ github.ref_name }}
+    draft: false
+    prerelease: false
+    generate_release_notes: true

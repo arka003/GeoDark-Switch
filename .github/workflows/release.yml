@@ -1,0 +1,34 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*' # This will trigger the workflow when you push a tag that starts with 'v'
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest # Using macOS runner for macOS app
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+          
+      - name: Build app
+        run: |
+          xcodebuild -project "GeoDark Switch.xcodeproj" -scheme "GeoDark Switch" -configuration Release -archivePath ./build/GeoDarkSwitch.xcarchive archive
+          xcodebuild -exportArchive -archivePath ./build/GeoDarkSwitch.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ./build
+          
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./build/GeoDark Switch.app
+          name: GeoDark Switch ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
